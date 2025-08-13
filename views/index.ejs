@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-</head>
-<body>
-    <h1><%= title %></h1>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= title %></title>
+    </head>
+    <body>
+        <h1><%= title %></h1>
+        <div class="trainers-list">
+            <% trainers.forEach(trainer => { %>
+            <div class="trainer-card">
+                <h2><%= trainer.name %></h2>
+                <img
+                    src="/assets/trainer_sprites/<%= trainer.sprite.sprite %>"
+                    alt="<%= trainer.sprite.name %>"
+                />
+
+                <div class="pokemon-team">
+                    <% trainer.team.forEach(pokemon => { %>
+                    <div class="pokemon-card">
+                        <img
+                            src="<%= pokemon.sprite %>"
+                            alt="<%= pokemon.name %>"
+                        />
+                        <h3><%= pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1) %></h3>
+                        <div class="types">
+                            <% pokemon.types.forEach(type => { %>
+                            <img
+                                src="<%= type.icon %>"
+                                alt="<%= type.name %>"
+                                title="<%= type.name %>"
+                            />
+                            <% }) %>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </body>
 </html>
