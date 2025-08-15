@@ -10,7 +10,52 @@ async function viewTrainerGet(req, res) {
     res.render("trainer", { title: "View Trainer", trainer: trainer });
 }
 
+async function createTrainerGet(req, res) {
+    const pokemon = await db.getAllPokemon();
+    const trainerSprites = await db.getAllTrainerSprites();
+    res.render("createTrainer", {
+        title: "Create Trainer",
+        pokemon: pokemon,
+        trainerSprites: trainerSprites,
+    });
+}
+
+async function createTrainerPost(req, res) {
+    let {
+        name,
+        pokemon1,
+        pokemon2,
+        pokemon3,
+        pokemon4,
+        pokemon5,
+        pokemon6,
+        sprite,
+    } = req.body;
+
+    pokemon1 = pokemon1 || null;
+    pokemon2 = pokemon2 || null;
+    pokemon3 = pokemon3 || null;
+    pokemon4 = pokemon4 || null;
+    pokemon5 = pokemon5 || null;
+    pokemon6 = pokemon6 || null;
+
+    db.createNewTrainer(
+        name,
+        pokemon1,
+        pokemon2,
+        pokemon3,
+        pokemon4,
+        pokemon5,
+        pokemon6,
+        sprite
+    );
+
+    res.redirect("/");
+}
+
 module.exports = {
     mainPageGet,
     viewTrainerGet,
+    createTrainerGet,
+    createTrainerPost,
 };

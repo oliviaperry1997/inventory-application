@@ -7,6 +7,7 @@
     </head>
     <body>
         <h1><%= title %></h1>
+        <a href="/create">Create a new Trainer</a>
         <div class="trainers-list">
             <% trainers.forEach(trainer => { %>
             <div class="trainer-card">
@@ -37,7 +38,7 @@
                     <% }) %>
                 </div>
             </div>
-            <a href="/<%= trainer.id %>">View Trainer</a>
+            <a href="/view/<%= trainer.id %>">View Trainer</a>
             <% }) %>
         </div>
     </body>
