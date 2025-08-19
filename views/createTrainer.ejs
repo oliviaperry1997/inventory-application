@@ -37,17 +37,20 @@
             <div class="pokemon-team">
                 <% for (let i = 0; i < 6; i++) { %>
                 <label for="pokemon<%= i+1 %>">Slot <%= i+1 %>:</label>
-                <select
+                <input
+                    list="pokemon"
                     name="pokemon<%= i+1 %>"
                     id="pokemon<%= i+1 %>"
                     onchange="const img = document.getElementById('pokemonSprite<%= i+1 %>'); img.src = this.options[this.selectedIndex].dataset.img || ''; img.style.display = this.value ? 'block' : 'none';"
                 >
-                    <option value="">--- None ---</option>
-                    <% pokemon.forEach(p => { %>
-                    <option value="<%= p.id %>" data-img="<%= p.sprite %>">
-                        <%= p.id %> - <%= p.name %>
-                    </option>
-                    <% }); %>
+                    <datalist id="pokemon">
+                        <option value="">--- None ---</option>
+                        <% pokemon.forEach(p => { %>
+                        <option value="<%= p.id %>" data-img="<%= p.sprite %>">
+                            <%= p.name %>
+                        </option>
+                        <% }); %>
+                    </datalist>
                 </select>
 
                 <img
