@@ -45,8 +45,7 @@
                     <option value="">--- None ---</option>
                     <% pokemon.forEach(p => { %>
                     <option value="<%= p.id %>" data-img="<%= p.sprite %>">
-                        <%= p.id %> - <%= p.name.charAt(0).toUpperCase() +
-                        p.name.slice(1) %>
+                        <%= p.id %> - <%= p.name %>
                     </option>
                     <% }); %>
                 </select>
