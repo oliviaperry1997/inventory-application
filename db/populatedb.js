@@ -65,22 +65,22 @@ async function populatedb(client) {
 
     const typeList = [
         "normal",
+        "fighting",
+        "flying",
+        "poison",
+        "ground",
+        "rock",
+        "bug",
+        "ghost",
+        "steel",
         "fire",
         "water",
         "grass",
         "electric",
-        "ice",
-        "fighting",
-        "poison",
-        "ground",
-        "flying",
         "psychic",
-        "bug",
-        "rock",
-        "ghost",
+        "ice",
         "dragon",
         "dark",
-        "steel",
         "fairy",
     ];
 
@@ -201,8 +201,7 @@ async function populatedb(client) {
     await client.query(`
         CREATE TABLE IF NOT EXISTS types (
             id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-            name TEXT UNIQUE NOT NULL,
-            icon TEXT
+            name TEXT UNIQUE NOT NULL
         );
     `);
 
@@ -210,17 +209,18 @@ async function populatedb(client) {
     await client.query(`
         CREATE TABLE IF NOT EXISTS pokemon (
             id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-            name TEXT,
+            name TEXT UNIQUE,
             type1_id INTEGER NOT NULL REFERENCES types(id),
             type2_id INTEGER REFERENCES types(id),
             sprite TEXT
         );
     `);
 
+    //create trainer_sprites table
     await client.query(`
         CREATE TABLE IF NOT EXISTS trainer_sprites (
             id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-            name TEXT,
+            name TEXT UNIQUE,
             sprite TEXT
         );
     `);
@@ -240,31 +240,11 @@ async function populatedb(client) {
     `);
 
     //populate types
-    for (const typeName of typeList) {
-        try {
-            const typeRes = await fetch(
-                `https://pokeapi.co/api/v2/type/${typeName}`
-            );
-            if (!typeRes.ok) throw new Error(`HTTP ${typeRes.status}`);
-
-            const typeData = await typeRes.json();
-            const iconUrl =
-                typeData.sprites?.["generation-viii"]?.[
-                    "brilliant-diamond-and-shining-pearl"
-                ]?.["name_icon"] || null;
-
-            await client.query(
-                `INSERT INTO types (name, icon) VALUES ($1, $2) ON CONFLICT (name) DO NOTHING`,
-                [typeName, iconUrl]
-            );
-        } catch (err) {
-            console.warn(`Failed to fetch type ${typeName} icon: ${err}`);
-            // Insert without icon on failure
-            await client.query(
-                `INSERT INTO types (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`,
-                [typeName]
-            );
-        }
+    for (const typeName of typeList) {           
+        await client.query(
+            `INSERT INTO types (name) VALUES ($1) ON CONFLICT (name) DO NOTHING`,
+            [typeName]
+        );
     }
 
     //populate pokemon
@@ -282,7 +262,8 @@ async function populatedb(client) {
         await client.query(
             `
             INSERT INTO pokemon (name, type1_id, type2_id, sprite)
-            VALUES ($1, $2, $3, $4);
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (name) DO NOTHING;;
             `,
             [
                 p.name,
@@ -298,7 +279,8 @@ async function populatedb(client) {
         await client.query(
             `
             INSERT INTO trainer_sprites (name, sprite)
-            VALUES ($1, $2);
+            VALUES ($1, $2)
+            ON CONFLICT (name) DO NOTHING;
             `,
             [s.name, s.sprite]
         );

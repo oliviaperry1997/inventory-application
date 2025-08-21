@@ -12,19 +12,35 @@ async function getAllTrainers() {
                 JSON_BUILD_OBJECT(
                     'id', p.id,
                     'name', p.name,
-                    'type1', p.type1_id,
-                    'type2', p.type2_id,
+                    'slot', v.slot,
+                    'type1_id', p.type1_id,
+                    'type1_name', t1.name,
+                    'type2_id', p.type2_id,
+                    'type2_name', t2.name,
                     'sprite', p.sprite
                 )
-                ORDER BY p.id
+                ORDER BY v.slot
             ) AS pokemon_team
         FROM trainers t
         JOIN trainer_sprites ts ON ts.id = t.sprite
-        LEFT JOIN pokemon p 
-            ON p.id IN (
-                t.pokemon1, t.pokemon2, t.pokemon3, 
-                t.pokemon4, t.pokemon5, t.pokemon6
-            )
+
+        LEFT JOIN LATERAL (
+            VALUES
+                (t.pokemon1, 1),
+                (t.pokemon2, 2),
+                (t.pokemon3, 3),
+                (t.pokemon4, 4),
+                (t.pokemon5, 5),
+                (t.pokemon6, 6)
+        ) AS v(pokemon_id, slot) ON TRUE
+
+        -- join pokemon
+        LEFT JOIN pokemon p ON p.id = v.pokemon_id
+
+        -- join types for type1 and type2
+        LEFT JOIN types t1 ON t1.id = p.type1_id
+        LEFT JOIN types t2 ON t2.id = p.type2_id
+
         GROUP BY t.id, ts.id
         ORDER BY t.id;
     `;
@@ -34,45 +50,56 @@ async function getAllTrainers() {
     return rows;
 }
 
-
 async function getOneTrainer(id) {
-    const { rows } = await pool.query("SELECT * FROM trainers WHERE id = $1;", [
-        id,
-    ]);
-    const trainer = rows[0];
-    if (!trainer) return null;
-    const { rows: sprites } = await pool.query(
-        "SELECT * FROM trainer_sprites;"
+    const { rows } = await pool.query(
+        `
+            SELECT 
+                t.id,
+                t.name,
+                ts.id AS sprite_id,
+                ts.name AS sprite_name,
+                ts.sprite AS sprite_path,
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'id', p.id,
+                        'name', p.name,
+                        'slot', v.slot,
+                        'type1_id', p.type1_id,
+                        'type1_name', t1.name,
+                        'type2_id', p.type2_id,
+                        'type2_name', t2.name,
+                        'sprite', p.sprite
+                    )
+                    ORDER BY v.slot
+                ) AS pokemon_team
+            FROM trainers t
+            JOIN trainer_sprites ts ON ts.id = t.sprite
+
+            LEFT JOIN LATERAL (
+                VALUES
+                    (t.pokemon1, 1),
+                    (t.pokemon2, 2),
+                    (t.pokemon3, 3),
+                    (t.pokemon4, 4),
+                    (t.pokemon5, 5),
+                    (t.pokemon6, 6)
+            ) AS v(pokemon_id, slot) ON TRUE
+
+            -- join pokemon
+            LEFT JOIN pokemon p ON p.id = v.pokemon_id
+
+            -- join types for type1 and type2
+            LEFT JOIN types t1 ON t1.id = p.type1_id
+            LEFT JOIN types t2 ON t2.id = p.type2_id
+
+            WHERE t.id = $1
+            GROUP BY t.id, ts.id
+            ORDER BY t.id;
+        `,
+        [id]
     );
-    const { rows: pokemons } = await pool.query("SELECT * FROM pokemon;");
-    const { rows: types } = await pool.query("SELECT * FROM types;");
 
-    const sprite = sprites.find((s) => s.id === trainer.sprite);
-
-    const team = [];
-    for (let slot = 1; slot <= 6; slot++) {
-        const pokemonId = trainer[`pokemon${slot}`];
-        if (!pokemonId) continue;
-
-        const pokemon = pokemons.find((p) => p.id === pokemonId);
-        if (!pokemon) continue;
-
-        const type1 = types.find((t) => t.id === pokemon.type1_id);
-        const type2 = types.find((t) => t.id === pokemon.type2_id);
-
-        team.push({
-            name: pokemon.name,
-            sprite: pokemon.sprite,
-            types: [type1, type2].filter(Boolean),
-        });
-    }
-
-    return {
-        id: trainer.id,
-        name: trainer.name,
-        sprite,
-        team,
-    };
+    return rows[0];
 }
 
 async function createNewTrainer(

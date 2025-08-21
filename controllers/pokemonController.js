@@ -1,29 +1,18 @@
 const db = require("../db/queries");
 
 async function mainPageGet(req, res) {
-    const rows = await db.getAllTrainers();
+    const trainers = await db.getAllTrainers();
 
-    const trainers = rows.map((r) => ({
-        id: r.id,
-        name: r.name,
-        sprite: {
-            sprite: r.sprite_path,
-            name: r.sprite_name,
-        },
-        team: (r.pokemon_team || []).map((p) => ({
-            name: p.name,
-            sprite: p.sprite,
-            types: [p.type1, p.type2].filter(Boolean),
-        })),
-    }));
-
-    console.log(trainers);
+    console.log(trainers[0]);
 
     res.render("index", { title: "All Trainers", trainers });
 }
 
 async function viewTrainerGet(req, res) {
     const trainer = await db.getOneTrainer(req.params.id);
+
+    console.log(trainer);
+
     res.render("trainer", { title: "View Trainer", trainer: trainer });
 }
 
@@ -57,7 +46,7 @@ async function createTrainerPost(req, res) {
     pokemon5 = pokemon5 || null;
     pokemon6 = pokemon6 || null;
 
-    db.createNewTrainer(
+    await db.createNewTrainer(
         name,
         pokemon1,
         pokemon2,
