@@ -13,7 +13,7 @@ async function viewTrainerGet(req, res) {
 
     console.log(trainer);
 
-    res.render("trainer", { title: "View Trainer", trainer: trainer });
+    res.render("viewTrainer", { title: "View Trainer", trainer: trainer });
 }
 
 async function createTrainerGet(req, res) {

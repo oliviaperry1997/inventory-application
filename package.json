@@ -6,5 +6,8 @@
     "express-validator": "^7.2.1",
     "node": "^22.18.0",
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "ejs-lint": "^2.0.1"
   }
 }

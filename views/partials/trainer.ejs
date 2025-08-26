@@ -1,0 +1,14 @@
+<div class="trainer-card">
+    <h2><%= trainer.name %></h2>
+    <img
+        src="/assets/trainer-sprites/<%= trainer.sprite_path %>"
+        alt="<%= trainer.sprite_name %>"
+        style="width: 200px"
+    />
+
+    <div class="pokemon-team">
+        <% trainer.pokemon_team.forEach(pokemon => { %>
+            <%- include("./pokemon", {pokemon: pokemon}) %>
+        <% }) %>
+    </div>
+</div>
