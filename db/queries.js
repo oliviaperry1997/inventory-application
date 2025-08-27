@@ -46,7 +46,6 @@ async function getAllTrainers() {
     `;
 
     const { rows } = await pool.query(query);
-    console.log(rows);
     return rows;
 }
 
@@ -130,6 +129,45 @@ async function createNewTrainer(
     );
 }
 
+async function updateTrainer(
+    id,
+    name,
+    pokemon1,
+    pokemon2,
+    pokemon3,
+    pokemon4,
+    pokemon5,
+    pokemon6,
+    sprite
+) {
+    await pool.query(
+        `
+            UPDATE trainers
+            SET
+                name = $2,
+                pokemon1 = $3,
+                pokemon2 = $4,
+                pokemon3 = $5,
+                pokemon4 = $6,
+                pokemon5 = $7,
+                pokemon6 = $8,
+                sprite = $9
+            WHERE id = $1;
+        `,
+        [
+            id,
+            name,
+            pokemon1,
+            pokemon2,
+            pokemon3,
+            pokemon4,
+            pokemon5,
+            pokemon6,
+            sprite,
+        ]
+    );
+}
+
 async function getAllPokemon() {
     const { rows } = await pool.query("SELECT * FROM pokemon;");
     return rows;
@@ -144,6 +182,7 @@ module.exports = {
     getAllTrainers,
     getOneTrainer,
     createNewTrainer,
+    updateTrainer,
     getAllPokemon,
     getAllTrainerSprites,
 };

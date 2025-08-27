@@ -3,12 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title><%= trainer.name %></title>
+        <title><%= title %></title>
     </head>
     <body>
         <h1><%= title %></h1>
-        <a href="/<%= trainer.id %>/update">Update Trainer</a>
-        <%- include("partials/trainer", {trainer: trainer}) %>
+        <%- include("partials/trainerForm", {trainer: trainer, pokemon: pokemon, trainerSprites:
+        trainerSprites, action: `/${trainer.id}/update`}) %>
         <a href="/">Home</a>
     </body>
 </html>

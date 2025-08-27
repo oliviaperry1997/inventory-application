@@ -1,6 +1,12 @@
 <form action="<%= action %>" method="post">
     <label for="name">Trainer Name:</label>
-    <input type="text" name="name" id="name" />
+    <input type="text"
+        name="name"
+        id="name"
+        <% if (trainer) { %>
+            value="<%= trainer.name %>"
+        <% } %>
+    />
     <label for="trainer-sprite">Select your Trainer Sprite:</label>
     <select
         name="sprite"
@@ -8,7 +14,12 @@
         onchange="document.getElementById('trainerSpriteImage').src = (this.options[this.selectedIndex].dataset.img ? '/assets/trainer-sprites/' + this.options[this.selectedIndex].dataset.img : '/assets/trainer-sprites/Spr_DP_Ace_Trainer_F_1.png');"
     >
         <% trainerSprites.forEach(s => { %>
-        <option value="<%= s.id %>" data-img="<%= s.sprite %>">
+        <option value="<%= s.id %>"
+            data-img="<%= s.sprite %>"
+            <% if (trainer && trainer.sprite_id === s.id) { %>
+                selected
+            <% } %>
+        >
             <%= s.name %>
         </option>
         <% }); %>
@@ -16,7 +27,7 @@
 
     <img
         id="trainerSpriteImage"
-        src="/assets/trainer-sprites/Spr_DP_Ace_Trainer_F_1.png"
+        src="/assets/trainer-sprites/<%= trainer ? trainer.sprite_path : 'Spr_DP_Ace_Trainer_F_1.png' %>"
         alt="Selected Sprite"
         style="display: block; width: 200px"
     />
@@ -31,46 +42,53 @@
 
     <div class="pokemon-team">
         <% for (let i = 0; i < 6; i++) { %>
-        <label for="pokemon<%= i+1 %>">Slot <%= i+1 %>:</label>
-        <input
-            list="pokemonList"
-            name="pokemon<%= i+1 %>"
-            id="pokemon<%= i+1 %>"
-            onchange="const val = this.value;
-                const img = document.getElementById('pokemonSprite<%= i+1 %>');
-                const audio = document.getElementById('pokemonAudio<%= i+1 %>');
-                const source = audio.querySelector('source');
+            <% const existing = trainer?.pokemon_team?.find(p => p.slot === i+1); %>
+            <label for="pokemon<%= i+1 %>">Slot <%= i+1 %>:</label>
+            <input
+                list="pokemonList"
+                name="pokemon<%= i+1 %>"
+                id="pokemon<%= i+1 %>"
+                value="<%= existing ? existing.id : '' %>"
+                onchange="const val = this.value;
+                    const img = document.getElementById('pokemonSprite<%= i+1 %>');
+                    const audio = document.getElementById('pokemonAudio<%= i+1 %>');
+                    const source = audio.querySelector('source');
 
-                if (val != 0) {
-                    img.src = pokemon[val-1].sprite;
-                    source.src = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${val}.ogg`;
-                    audio.load();
-                    img.style =
-                    'display: block; width: 150px; cursor: pointer;';
-                } else {
-                    img.style.display = 'none'; source.src = '';
-                    audio.load();
-                }
-            "
-        />
-        <br />
+                    if (val != 0) {
+                        img.src = pokemon[val-1].sprite;
+                        source.src = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${val}.ogg`;
+                        audio.load();
+                        img.style =
+                        'display: block; width: 150px; cursor: pointer;';
+                    } else {
+                        img.style.display = 'none'; source.src = '';
+                        audio.load();
+                    }
+                "
+            />
+            <br />
 
-        <img
-            id="pokemonSprite<%= i+1 %>"
-            src=""
-            alt="Selected Pokémon"
-            onclick="const pokemonAudio = document.getElementById('pokemonAudio<%= i+1 %>'); pokemonAudio.volume = 0.5; pokemonAudio.play();"
-            style="display: none"
-        />
-        <audio id="pokemonAudio<%= i+1 %>">
-            <source src="" type="audio/ogg" />
-            Your browser does not support the audio element.
-        </audio>
+            <img
+                id="pokemonSprite<%= i+1 %>"
+                src="<%= existing ? existing.sprite : '' %>"
+                alt="Selected Pokémon"
+                onclick="const pokemonAudio = document.getElementById('pokemonAudio<%= i+1 %>'); pokemonAudio.volume = 0.5; pokemonAudio.play();"
+                <% if (existing) { %>
+                    style="display: block; width: 150px; cursor: pointer;"
+                <% } else { %>
+                    style="display: none;"
+                <% } %>
+            />
+            <audio id="pokemonAudio<%= i+1 %>">
+                <source src="<%= existing ? 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/' + existing.id + '.ogg' : '' %>" type="audio/ogg" />
+                Your browser does not support the audio element.
+            </audio>
         <% } %>
     </div>
     <button type="submit">Submit</button>
 </form>
 
 <script>
-    const pokemon = <%- JSON.stringify(pokemon) %>;
+    const trainer = JSON.parse('<%- JSON.stringify(trainer) %>');
+    const pokemon = JSON.parse('<%- JSON.stringify(pokemon) %>');
 </script>
