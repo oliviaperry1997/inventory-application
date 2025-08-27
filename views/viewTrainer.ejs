@@ -7,50 +7,7 @@
     </head>
     <body>
         <h1><%= title %></h1>
-        <div class="trainer-card">
-            <h2><%= trainer.name %></h2>
-            <img
-                src="/assets/trainer-sprites/<%= trainer.sprite_path %>"
-                alt="<%= trainer.sprite_name %>"
-                style="width: 200px"
-            />
-
-            <div class="pokemon-team">
-                <% trainer.pokemon_team.forEach(pokemon => { %>
-                <div class="pokemon-card">
-                    <img
-                        src="<%= pokemon.sprite %>"
-                        alt="<%= pokemon.name %>"
-                        style="cursor: pointer; width: 150px"
-                        onclick="const audio = document.getElementById('<%= pokemon.id %>_audio'); audio.volume = 0.5; audio.play();"
-                        title="<%= pokemon.name %> (Click to hear this Pokémon's cry!)"
-                    />
-                    <audio id="<%= pokemon.id %>_audio">
-                        <source
-                            src="https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/<%= pokemon.id %>.ogg"
-                            type="audio/ogg"
-                        />
-                        Your browser does not support the audio element.
-                    </audio>
-                    <h3><%= pokemon.name %></h3>
-                    <div class="types">
-                        <img
-                            src="/assets/type-icons/<%= pokemon.type1_id %>.png"
-                            alt="<%= pokemon.type1_name %>"
-                            style="width: 100px"
-                        />
-                        <% if (pokemon.type2_id != null) { %>
-                        <img
-                            src="/assets/type-icons/<%= pokemon.type2_id %>.png"
-                            alt="<%= pokemon.type2_name %>"
-                            style="width: 100px"
-                        />
-                        <% } %>
-                    </div>
-                </div>
-                <% }) %>
-            </div>
-        </div>
+        <%- include("partials/trainer", {trainer: trainer}) %>
         <a href="/">Home</a>
     </body>
 </html>
