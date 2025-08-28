@@ -9,5 +9,6 @@ pokemonRouter.get("/create", pokemonController.createTrainerGet);
 pokemonRouter.post("/create", pokemonController.createTrainerPost);
 pokemonRouter.get("/:id/update", pokemonController.updateTrainerGet);
 pokemonRouter.post("/:id/update", pokemonController.updateTrainerPost);
+pokemonRouter.post("/:id/delete", pokemonController.deleteTrainerPost);
 
 module.exports = pokemonRouter;

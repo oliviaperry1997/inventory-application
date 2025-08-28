@@ -102,6 +102,11 @@ async function updateTrainerPost(req, res) {
     res.redirect(`/${req.params.id}/view`);
 }
 
+async function deleteTrainerPost(req, res) {
+    await db.deleteTrainer(req.params.id);
+    res.redirect("/");
+}
+
 module.exports = {
     mainPageGet,
     viewTrainerGet,
@@ -109,4 +114,5 @@ module.exports = {
     createTrainerPost,
     updateTrainerGet,
     updateTrainerPost,
+    deleteTrainerPost,
 };

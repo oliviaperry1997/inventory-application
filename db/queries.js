@@ -168,6 +168,13 @@ async function updateTrainer(
     );
 }
 
+async function deleteTrainer(id) {
+    await pool.query(
+        `DELETE FROM trainers WHERE id = $1;`,
+        [id]
+    )
+}
+
 async function getAllPokemon() {
     const { rows } = await pool.query("SELECT * FROM pokemon;");
     return rows;
@@ -183,6 +190,7 @@ module.exports = {
     getOneTrainer,
     createNewTrainer,
     updateTrainer,
+    deleteTrainer,
     getAllPokemon,
     getAllTrainerSprites,
 };
